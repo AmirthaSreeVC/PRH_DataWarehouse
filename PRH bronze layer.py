@@ -6,7 +6,7 @@ from datetime import datetime
 import time
 #'AUDIO','DK.COM','PRH.CA','PRH.US','SALESINTERNATIONAL'
 domains = ['AUDIO','DK.COM','PRH.CA','PRH.US','SALESINTERNATIONAL']
-connection_uri='mssql+pyodbc://@DESKTOP-J8R2HPQ\\SQLEXPRESS/PRH_Warehouse?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server'
+connection_uri='mssql+pyodbc://@DESK\\SQLEXPRESS/PRH_Warehouse?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server'
 engine = create_engine(connection_uri)
                 
 
@@ -21,7 +21,7 @@ class Tables:
                         print(">>> Data Extraction: "+table_name+"_"+domain)
                         c=''
                         c='2' if rows!=0 else '0'                
-                        url = "https://api.penguinrandomhouse.com/resources/v2/title/domains/"+domain+"/"+table_name.lower()+path+"?suppressLinks=true&rows="+c+"&api_key=dghk9ckmufrkzsz5rww5r4qc"
+                        url = "https://api.penguinrandomhouse.com/resources/v2/title/domains/"+domain+"/"+table_name.lower()+path+"?suppressLinks=true&rows="+c+"&api_key=key-name"
                         try:
                                 
                                 r = requests.get(url)
@@ -50,7 +50,7 @@ class Tables:
                                 count = json_data['recordCount']
                                 for j in range(2,count,rows):  
                                         try:
-                                                url = "https://api.penguinrandomhouse.com/resources/v2/title/domains/"+domain+"/"+table_name.lower()+path+"?suppressLinks=true&suppressRecordCount=true&start="+str(j)+"&rows="+str(rows)+"&api_key=dghk9ckmufrkzsz5rww5r4qc"
+                                                url = "https://api.penguinrandomhouse.com/resources/v2/title/domains/"+domain+"/"+table_name.lower()+path+"?suppressLinks=true&suppressRecordCount=true&start="+str(j)+"&rows="+str(rows)+"&api_key=key_name"
                                                           
                                                 r = requests.get(url)
                                                 if r.status_code !=200:
@@ -102,19 +102,20 @@ if __name__ == '__main__':
         overall_start_time = datetime.now()
         t = Tables()
         small_tables = ['roles','events','catSets','series']
-        #large_tables = ['categories','title','works','authors']
+        large_tables = ['categories','title','works','authors']
         for i in range(0,len(small_tables)):
                 t.extract(small_tables[i])
                 if i%2==0:
                         time.sleep(1)
 
         
-        #t.extract('titles',rows=1000)
-        #t.extract('authors',path='/views/list-display',rows=5000) 
-        #t.extract('works',path='/views/ant',rows=2000)  
-        #t.extract('categories',rows=300)
+        t.extract('titles',rows=1000)
+        t.extract('authors',path='/views/list-display',rows=5000) 
+        t.extract('works',path='/views/ant',rows=2000)  
+        t.extract('categories',rows=300)
         engine.dispose()
         overall_end_time = datetime.now()
         print(f'>>>>Overall Duration: {(overall_end_time-overall_start_time).seconds} seconds')
+
 
         
